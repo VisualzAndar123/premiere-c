@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Première C - Portail de Classe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <h2>Première C</h2>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#accueil" class="nav-link active">Accueil</a></li>
+                    <li><a href="#calendrier" class="nav-link">Calendrier</a></li>
+                    <li><a href="#actualites" class="nav-link">Actualités</a></li>
+                    <li><a href="#professeurs" class="nav-link">Professeurs</a></li>
+                    <li><a href="#delegues" class="nav-link">Délégués</a></li>
+                </ul>
+                <div class="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Error Banner (hidden by default) -->
+    <div class="error-banner" id="errorBanner">
+        <div class="container">
+            <p>Le contenu affiché provient de la dernière ouverture du portail. Veuillez contacter l'informaticien ou un délégué.</p>
+            <button class="close-error">&times;</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Accueil Section -->
+        <section id="accueil" class="page-section active">
+            <header class="page-header">
+                <div class="container">
+                    <div class="header-content">
+                        <h1>Bienvenue en Première C</h1>
+                        <div class="flag-decoration">
+                            <div class="flag-stripe blue"></div>
+                            <div class="flag-stripe white"></div>
+                            <div class="flag-stripe red"></div>
+                        </div>
+                        <h2 class="slogan">Portail de classe 2025-2026</h2>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container">
+                <!-- Actualités récentes -->
+                <section class="recent-news">
+                    <h2>Actualités récentes</h2>
+                    <div class="news-grid" id="recentNews">
+                        <!-- Dynamically populated from Sanity -->
+                    </div>
+                </section>
+
+                <!-- Calendrier à venir -->
+                <section class="upcoming-events">
+                    <h2>Prochains événements</h2>
+                    <div class="events-list" id="upcomingEvents">
+                        <!-- Dynamically populated from Sanity -->
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- Calendrier Section -->
+        <section id="calendrier" class="page-section">
+            <div class="container">
+                <h2>Calendrier de classe</h2>
+                
+                <div class="calendar-controls">
+                    <button id="prevMonth" class="calendar-nav">&lt;</button>
+                    <h3 id="currentMonth"></h3>
+                    <button id="nextMonth" class="calendar-nav">&gt;</button>
+                </div>
+                
+                <div class="calendar-views">
+                    <button id="monthView" class="view-btn active">Vue Mensuelle</button>
+                    <button id="weekView" class="view-btn">Vue Hebdomadaire</button>
+                </div>
+                
+                <!-- Monthly View -->
+                <div id="monthlyView" class="calendar-view active">
+                    <div class="calendar-header">
+                        <div class="day-header">Lun</div>
+                        <div class="day-header">Mar</div>
+                        <div class="day-header">Mer</div>
+                        <div class="day-header">Jeu</div>
+                        <div class="day-header">Ven</div>
+                        <div class="day-header">Sam</div>
+                        <div class="day-header">Dim</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                
+                <!-- Weekly View -->
+                <div id="weeklyView" class="calendar-view">
+                    <div class="week-header" id="weekHeader">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <div class="week-grid" id="weekGrid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                
+                <!-- Event Details Modal -->
+                <div class="event-modal" id="eventModal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <h3 id="modalDate"></h3>
+                        <div class="modal-events" id="modalEvents">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actualités Section -->
+        <section id="actualites" class="page-section">
+            <div class="container">
+                <h2>Actualités de la classe</h2>
+                <div class="news-container" id="newsContainer">
+                    <!-- Dynamically populated from Sanity -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Professeurs Section -->
+        <section id="professeurs" class="page-section">
+            <div class="container">
+                <h2>Nos Professeurs</h2>
+                <div class="teachers-grid" id="teachersGrid">
+                    <!-- Dynamically populated from Sanity -->
+                </div>
+            </div>
+            
+            <!-- Teacher Details Modal -->
+            <div class="teacher-modal" id="teacherModal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="teacher-details" id="teacherDetails">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Délégués Section -->
+        <section id="delegues" class="page-section">
+            <div class="container">
+                <h2>Délégués de Classe</h2>
+                <div class="delegates-grid" id="delegatesGrid">
+                    <!-- Dynamically populated from Sanity -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Portail de classe Première C - 2025-2026</p>
+            <p>Développé avec ❤️ pour les élèves</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
