@@ -465,6 +465,11 @@ p {
     font-size: 1.5rem;
     cursor: pointer;
     color: #666;
+    z-index: 1001;
+}
+
+.close-modal:hover {
+    color: #000;
 }
 
 .modal-events {

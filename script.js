@@ -1,14 +1,13 @@
 // Configuration Sanity
 const sanityConfig = {
-    projectId: 'ge6gluia', // À remplacer par votre projectId
-    dataset: 'production', // Ou le dataset que vous utilisez
-    useCdn: true
+    projectId: 'ge6gluia',
+    dataset: 'production',
+    useCdn: true,
+    apiVersion: '2023-05-03'
 };
 
 // Client Sanity
-const sanityClient = sanityConfig.projectId !== 'ge6gluia' 
-    ? sanity.createClient(sanityConfig)
-    : null;
+const sanityClient = sanity.createClient(sanityConfig);
 
 // État de l'application
 const appState = {
@@ -28,6 +27,7 @@ const appState = {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app...');
     initializeApp();
     setupEventListeners();
     loadCachedData();
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialisation de l'application
 function initializeApp() {
+    console.log('Initializing app...');
     // Afficher la page d'accueil par défaut
     showPage('accueil');
     
@@ -48,11 +49,14 @@ function initializeApp() {
 
 // Configuration des écouteurs d'événements
 function setupEventListeners() {
-    // Navigation
+    console.log('Setting up event listeners...');
+    
+    // Navigation principale
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const pageId = this.getAttribute('href').substring(1);
+            console.log('Navigation clicked:', pageId);
             showPage(pageId);
         });
     });
@@ -61,45 +65,84 @@ function setupEventListeners() {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
     
-    mobileMenuBtn.addEventListener('click', function() {
-        this.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
+    if (mobileMenuBtn && navLinks) {
+        mobileMenuBtn.addEventListener('click', function() {
+            console.log('Mobile menu clicked');
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
     
     // Fermer le bandeau d'erreur
-    document.querySelector('.close-error').addEventListener('click', function() {
-        document.getElementById('errorBanner').style.display = 'none';
-    });
-    
-    // Navigation du calendrier
-    document.getElementById('prevMonth').addEventListener('click', function() {
-        changeMonth(-1);
-    });
-    
-    document.getElementById('nextMonth').addEventListener('click', function() {
-        changeMonth(1);
-    });
-    
-    // Changement de vue du calendrier
-    document.getElementById('monthView').addEventListener('click', function() {
-        switchCalendarView('month');
-    });
-    
-    document.getElementById('weekView').addEventListener('click', function() {
-        switchCalendarView('week');
-    });
-    
-    // Fermeture des modales
-    document.querySelectorAll('.close-modal').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.modal').classList.remove('active');
+    const closeErrorBtn = document.querySelector('.close-error');
+    if (closeErrorBtn) {
+        closeErrorBtn.addEventListener('click', function() {
+            console.log('Closing error banner');
+            document.getElementById('errorBanner').style.display = 'none';
         });
+    }
+    
+    // Navigation du calendrier - FIXED: Direct event listeners
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', function() {
+            console.log('Previous month clicked');
+            changeMonth(-1);
+        });
+    } else {
+        console.error('prevMonth button not found');
+    }
+    
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', function() {
+            console.log('Next month clicked');
+            changeMonth(1);
+        });
+    } else {
+        console.error('nextMonth button not found');
+    }
+    
+    // Changement de vue du calendrier - FIXED: Direct event listeners
+    const monthViewBtn = document.getElementById('monthView');
+    const weekViewBtn = document.getElementById('weekView');
+    
+    if (monthViewBtn) {
+        monthViewBtn.addEventListener('click', function() {
+            console.log('Month view clicked');
+            switchCalendarView('month');
+        });
+    } else {
+        console.error('monthView button not found');
+    }
+    
+    if (weekViewBtn) {
+        weekViewBtn.addEventListener('click', function() {
+            console.log('Week view clicked');
+            switchCalendarView('week');
+        });
+    } else {
+        console.error('weekView button not found');
+    }
+    
+    // Fermeture des modales - FIXED
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('close-modal')) {
+            console.log('Close modal clicked');
+            e.preventDefault();
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
     });
     
     // Fermer les modales en cliquant à l'extérieur
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', function(e) {
             if (e.target === this) {
+                console.log('Closing modal by clicking outside');
                 this.classList.remove('active');
             }
         });
@@ -108,11 +151,17 @@ function setupEventListeners() {
 
 // Navigation entre les pages
 function showPage(pageId) {
+    console.log('Showing page:', pageId);
+    
     // Mettre à jour la navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
-    document.querySelector(`a[href="#${pageId}"]`).classList.add('active');
+    
+    const activeLink = document.querySelector(`a[href="#${pageId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
     
     // Masquer toutes les pages
     document.querySelectorAll('.page-section').forEach(section => {
@@ -120,11 +169,18 @@ function showPage(pageId) {
     });
     
     // Afficher la page sélectionnée
-    document.getElementById(pageId).classList.add('active');
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
     
     // Fermer le menu mobile
-    document.querySelector('.mobile-menu-btn').classList.remove('active');
-    document.querySelector('.nav-links').classList.remove('active');
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    if (mobileMenuBtn && navLinks) {
+        mobileMenuBtn.classList.remove('active');
+        navLinks.classList.remove('active');
+    }
     
     // Mettre à jour l'état
     appState.currentPage = pageId;
@@ -132,15 +188,19 @@ function showPage(pageId) {
     // Actions spécifiques à chaque page
     switch(pageId) {
         case 'calendrier':
+            console.log('Rendering calendar page');
             renderCalendar();
             break;
         case 'actualites':
+            console.log('Rendering news page');
             renderNews();
             break;
         case 'professeurs':
+            console.log('Rendering teachers page');
             renderTeachers();
             break;
         case 'delegues':
+            console.log('Rendering delegates page');
             renderDelegates();
             break;
     }
@@ -148,13 +208,7 @@ function showPage(pageId) {
 
 // Gestion des données Sanity
 async function fetchAllData() {
-    if (!sanityClient) {
-        console.warn('Sanity client non configuré. Utilisation des données en cache.');
-        appState.useCachedData = true;
-        updateUIWithCachedData();
-        return;
-    }
-    
+    console.log('Fetching all data from Sanity...');
     try {
         // Récupérer toutes les données en parallèle
         const [
@@ -175,15 +229,25 @@ async function fetchAllData() {
             fetchMatieres()
         ]);
         
+        console.log('Data fetched successfully:', {
+            devoirs: devoirs?.length || 0,
+            examens: examens?.length || 0,
+            evenements: evenements?.length || 0,
+            actualites: actualites?.length || 0,
+            professeurs: professeurs?.length || 0,
+            delegues: delegues?.length || 0,
+            matieres: matieres?.length || 0
+        });
+        
         // Mettre à jour le cache
         appState.cachedData = {
-            devoirs,
-            examens,
-            evenements,
-            actualites,
-            professeurs,
-            delegues,
-            matieres
+            devoirs: devoirs || [],
+            examens: examens || [],
+            evenements: evenements || [],
+            actualites: actualites || [],
+            professeurs: professeurs || getDefaultTeachers(),
+            delegues: delegues || getDefaultDelegates(),
+            matieres: matieres || []
         };
         
         // Sauvegarder dans le localStorage
@@ -195,7 +259,10 @@ async function fetchAllData() {
         
         // Masquer le bandeau d'erreur si nécessaire
         if (appState.useCachedData) {
-            document.getElementById('errorBanner').style.display = 'none';
+            const errorBanner = document.getElementById('errorBanner');
+            if (errorBanner) {
+                errorBanner.style.display = 'none';
+            }
             appState.useCachedData = false;
         }
         
@@ -207,7 +274,10 @@ async function fetchAllData() {
         updateUIWithCachedData();
         
         // Afficher le bandeau d'erreur
-        document.getElementById('errorBanner').style.display = 'block';
+        const errorBanner = document.getElementById('errorBanner');
+        if (errorBanner) {
+            errorBanner.style.display = 'block';
+        }
     }
 }
 
@@ -224,12 +294,14 @@ function loadCachedData() {
         
         if (hoursDiff < 24) {
             appState.cachedData = JSON.parse(cachedData);
+            console.log('Loaded cached data from localStorage');
         }
     }
 }
 
 // Mettre à jour l'interface avec les données en cache
 function updateUIWithCachedData() {
+    console.log('Updating UI with cached data');
     renderHomePage();
     renderCalendar();
     renderNews();
@@ -241,7 +313,10 @@ function updateUIWithCachedData() {
 function checkConnection() {
     if (!navigator.onLine) {
         appState.useCachedData = true;
-        document.getElementById('errorBanner').style.display = 'block';
+        const errorBanner = document.getElementById('errorBanner');
+        if (errorBanner) {
+            errorBanner.style.display = 'block';
+        }
     }
 }
 
@@ -249,40 +324,44 @@ function checkConnection() {
 
 // Récupérer les devoirs
 async function fetchDevoirs() {
-    if (!sanityClient) return [];
-    
     const query = `*[_type == "devoir"]{
         _id,
         title,
         description,
         date,
         matiere->{name},
-        teacher->{name}
+        "teacher": teacher->{name}
     }`;
     
-    return await sanityClient.fetch(query);
+    try {
+        return await sanityClient.fetch(query);
+    } catch (error) {
+        console.error('Erreur lors du chargement des devoirs:', error);
+        return [];
+    }
 }
 
 // Récupérer les examens
 async function fetchExamens() {
-    if (!sanityClient) return [];
-    
     const query = `*[_type == "examen"]{
         _id,
         title,
         description,
         date,
         matiere->{name},
-        teacher->{name}
+        "teacher": teacher->{name}
     }`;
     
-    return await sanityClient.fetch(query);
+    try {
+        return await sanityClient.fetch(query);
+    } catch (error) {
+        console.error('Erreur lors du chargement des examens:', error);
+        return [];
+    }
 }
 
 // Récupérer les événements
 async function fetchEvenements() {
-    if (!sanityClient) return [];
-    
     const query = `*[_type == "evenement"]{
         _id,
         title,
@@ -291,74 +370,92 @@ async function fetchEvenements() {
         location
     }`;
     
-    return await sanityClient.fetch(query);
+    try {
+        return await sanityClient.fetch(query);
+    } catch (error) {
+        console.error('Erreur lors du chargement des événements:', error);
+        return [];
+    }
 }
 
 // Récupérer les actualités
 async function fetchActualites() {
-    if (!sanityClient) return [];
-    
     const query = `*[_type == "actualite"] | order(date desc){
         _id,
         title,
         content,
         date,
-        image
+        "image": image.asset->url
     }`;
     
-    return await sanityClient.fetch(query);
+    try {
+        return await sanityClient.fetch(query);
+    } catch (error) {
+        console.error('Erreur lors du chargement des actualités:', error);
+        return [];
+    }
 }
 
 // Récupérer les professeurs
 async function fetchProfesseurs() {
-    if (!sanityClient) return getDefaultTeachers();
-    
     const query = `*[_type == "professeur"]{
         _id,
         name,
         subjects[]->{name},
         phone,
         email,
-        photo
+        "photo": photo.asset->url
     }`;
     
-    const teachers = await sanityClient.fetch(query);
-    return teachers.length > 0 ? teachers : getDefaultTeachers();
+    try {
+        const teachers = await sanityClient.fetch(query);
+        return teachers.length > 0 ? teachers : getDefaultTeachers();
+    } catch (error) {
+        console.error('Erreur lors du chargement des professeurs:', error);
+        return getDefaultTeachers();
+    }
 }
 
 // Récupérer les délégués
 async function fetchDelegues() {
-    if (!sanityClient) return getDefaultDelegates();
-    
     const query = `*[_type == "delegue"]{
         _id,
         name,
         role,
         description,
         contact,
-        photo
+        "photo": photo.asset->url
     }`;
     
-    const delegates = await sanityClient.fetch(query);
-    return delegates.length > 0 ? delegates : getDefaultDelegates();
+    try {
+        const delegates = await sanityClient.fetch(query);
+        return delegates.length > 0 ? delegates : getDefaultDelegates();
+    } catch (error) {
+        console.error('Erreur lors du chargement des délégués:', error);
+        return getDefaultDelegates();
+    }
 }
 
 // Récupérer les matières
 async function fetchMatieres() {
-    if (!sanityClient) return [];
-    
     const query = `*[_type == "matiere"]{
         _id,
         name
     }`;
     
-    return await sanityClient.fetch(query);
+    try {
+        return await sanityClient.fetch(query);
+    } catch (error) {
+        console.error('Erreur lors du chargement des matières:', error);
+        return [];
+    }
 }
 
 // RENDU DES PAGES
 
 // Page d'accueil
 function renderHomePage() {
+    console.log('Rendering home page');
     renderRecentNews();
     renderUpcomingEvents();
 }
@@ -366,6 +463,8 @@ function renderHomePage() {
 // Actualités récentes
 function renderRecentNews() {
     const container = document.getElementById('recentNews');
+    if (!container) return;
+    
     const actualites = appState.cachedData.actualites.slice(0, 3);
     
     if (actualites.length === 0) {
@@ -379,7 +478,7 @@ function renderRecentNews() {
             <div class="news-content">
                 <div class="news-date">${formatDate(news.date)}</div>
                 <h3>${news.title}</h3>
-                <p>${news.content.substring(0, 100)}...</p>
+                <p>${news.content ? news.content.substring(0, 100) + '...' : ''}</p>
             </div>
         </div>
     `).join('');
@@ -395,7 +494,10 @@ function renderRecentNews() {
 // Événements à venir
 function renderUpcomingEvents() {
     const container = document.getElementById('upcomingEvents');
+    if (!container) return;
+    
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     
     // Combiner tous les événements
     const allEvents = [
@@ -406,7 +508,11 @@ function renderUpcomingEvents() {
     
     // Filtrer les événements à venir (dans les 30 prochains jours)
     const upcomingEvents = allEvents
-        .filter(event => new Date(event.date) >= now)
+        .filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate >= now;
+        })
         .sort((a, b) => new Date(a.date) - new Date(b.date))
         .slice(0, 5);
     
@@ -433,21 +539,37 @@ function renderUpcomingEvents() {
 // Initialisation du calendrier
 function initializeCalendar() {
     const currentMonthElement = document.getElementById('currentMonth');
-    const now = new Date();
-    currentMonthElement.textContent = formatMonthYear(now);
+    if (currentMonthElement) {
+        currentMonthElement.textContent = formatMonthYear(appState.currentDate);
+        console.log('Calendar initialized with date:', appState.currentDate);
+    }
 }
 
-// Changer de mois
+// Changer de mois - COMPLETELY FIXED
 function changeMonth(direction) {
-    const currentDate = appState.currentDate;
-    currentDate.setMonth(currentDate.getMonth() + direction);
+    console.log('Changing month, direction:', direction);
+    console.log('Current date before change:', appState.currentDate);
     
-    document.getElementById('currentMonth').textContent = formatMonthYear(currentDate);
+    // Create a completely new date object to avoid any reference issues
+    const newDate = new Date(appState.currentDate.getTime());
+    newDate.setMonth(newDate.getMonth() + direction);
+    appState.currentDate = newDate;
+    
+    console.log('New date after change:', appState.currentDate);
+    
+    const currentMonthElement = document.getElementById('currentMonth');
+    if (currentMonthElement) {
+        currentMonthElement.textContent = formatMonthYear(appState.currentDate);
+        console.log('Updated month display to:', formatMonthYear(appState.currentDate));
+    }
+    
     renderCalendar();
 }
 
 // Changer de vue calendrier
 function switchCalendarView(view) {
+    console.log('Switching calendar view to:', view);
+    
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -457,11 +579,19 @@ function switchCalendarView(view) {
     });
     
     if (view === 'month') {
-        document.getElementById('monthView').classList.add('active');
-        document.getElementById('monthlyView').classList.add('active');
+        const monthViewBtn = document.getElementById('monthView');
+        const monthlyView = document.getElementById('monthlyView');
+        if (monthViewBtn && monthlyView) {
+            monthViewBtn.classList.add('active');
+            monthlyView.classList.add('active');
+        }
     } else {
-        document.getElementById('weekView').classList.add('active');
-        document.getElementById('weeklyView').classList.add('active');
+        const weekViewBtn = document.getElementById('weekView');
+        const weeklyView = document.getElementById('weeklyView');
+        if (weekViewBtn && weeklyView) {
+            weekViewBtn.classList.add('active');
+            weeklyView.classList.add('active');
+        }
     }
     
     renderCalendar();
@@ -469,9 +599,18 @@ function switchCalendarView(view) {
 
 // Rendu du calendrier
 function renderCalendar() {
-    const currentView = document.querySelector('.calendar-view.active').id;
+    console.log('Rendering calendar for date:', appState.currentDate);
     
-    if (currentView === 'monthlyView') {
+    const currentView = document.querySelector('.calendar-view.active');
+    if (!currentView) {
+        console.error('No active calendar view found');
+        return;
+    }
+    
+    const currentViewId = currentView.id;
+    console.log('Active view:', currentViewId);
+    
+    if (currentViewId === 'monthlyView') {
         renderMonthlyCalendar();
     } else {
         renderWeeklyCalendar();
@@ -481,8 +620,15 @@ function renderCalendar() {
 // Rendu du calendrier mensuel
 function renderMonthlyCalendar() {
     const container = document.getElementById('calendarGrid');
+    if (!container) {
+        console.error('Calendar grid container not found');
+        return;
+    }
+    
     const year = appState.currentDate.getFullYear();
     const month = appState.currentDate.getMonth();
+    
+    console.log('Rendering monthly calendar for:', year, month);
     
     // Premier jour du mois
     const firstDay = new Date(year, month, 1);
@@ -493,6 +639,9 @@ function renderMonthlyCalendar() {
     let firstDayOfWeek = firstDay.getDay();
     // Ajuster pour commencer le lundi
     firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    
+    console.log('First day of month:', firstDay, 'Day of week:', firstDay.getDay(), 'Adjusted:', firstDayOfWeek);
+    console.log('Last day of month:', lastDay);
     
     // Combiner tous les événements
     const allEvents = [
@@ -514,17 +663,24 @@ function renderMonthlyCalendar() {
         const dateString = formatDateForAPI(currentDate);
         
         // Événements de ce jour
-        const dayEvents = allEvents.filter(event => 
-            formatDateForAPI(new Date(event.date)) === dateString
-        );
+        const dayEvents = allEvents.filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0);
+            const compareDate = new Date(currentDate);
+            compareDate.setHours(0, 0, 0, 0);
+            return formatDateForAPI(eventDate) === formatDateForAPI(compareDate);
+        });
         
         // Créer les indicateurs d'événements
         const eventIndicators = dayEvents.map(event => 
             `<div class="event-indicator indicator-${event.color}"></div>`
         ).join('');
         
+        const isToday = isSameDay(currentDate, new Date());
+        const todayClass = isToday ? ' today' : '';
+        
         calendarHTML += `
-            <div class="calendar-day" data-date="${dateString}">
+            <div class="calendar-day${todayClass}" data-date="${dateString}">
                 <div class="calendar-day-number">${day}</div>
                 <div class="event-indicators">${eventIndicators}</div>
             </div>
@@ -532,20 +688,36 @@ function renderMonthlyCalendar() {
     }
     
     container.innerHTML = calendarHTML;
+    console.log('Calendar grid rendered with', lastDay.getDate(), 'days');
     
     // Ajouter les écouteurs d'événements pour les jours
-    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+    const dayElements = document.querySelectorAll('.calendar-day:not(.empty)');
+    console.log('Found', dayElements.length, 'day elements to add event listeners to');
+    
+    dayElements.forEach(day => {
         day.addEventListener('click', function() {
-            showEventDetails(this.getAttribute('data-date'));
+            const date = this.getAttribute('data-date');
+            console.log('Day clicked:', date);
+            showEventDetails(date);
         });
     });
 }
 
 // Rendu du calendrier hebdomadaire
 function renderWeeklyCalendar() {
+    const weekHeader = document.getElementById('weekHeader');
+    const weekGrid = document.getElementById('weekGrid');
+    
+    if (!weekHeader || !weekGrid) {
+        console.error('Weekly calendar elements not found');
+        return;
+    }
+    
     const year = appState.currentDate.getFullYear();
     const month = appState.currentDate.getMonth();
     const date = appState.currentDate.getDate();
+    
+    console.log('Rendering weekly calendar for:', year, month, date);
     
     // Premier jour de la semaine (lundi)
     const firstDayOfWeek = new Date(year, month, date);
@@ -553,12 +725,9 @@ function renderWeeklyCalendar() {
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     firstDayOfWeek.setDate(date + diffToMonday);
     
-    // Rendu de l'en-tête de la semaine
-    const weekHeader = document.getElementById('weekHeader');
-    let headerHTML = '';
+    console.log('First day of week (Monday):', firstDayOfWeek);
     
-    // Rendu de la grille de la semaine
-    const weekGrid = document.getElementById('weekGrid');
+    let headerHTML = '';
     let gridHTML = '';
     
     // Combiner tous les événements
@@ -573,18 +742,25 @@ function renderWeeklyCalendar() {
         currentDate.setDate(firstDayOfWeek.getDate() + i);
         const dateString = formatDateForAPI(currentDate);
         
+        const isToday = isSameDay(currentDate, new Date());
+        const todayClass = isToday ? ' today' : '';
+        
         // En-tête
         headerHTML += `
-            <div class="week-day-header">
+            <div class="week-day-header${todayClass}">
                 ${formatDayName(currentDate.getDay())}<br>
                 ${currentDate.getDate()}
             </div>
         `;
         
         // Événements de ce jour
-        const dayEvents = allEvents.filter(event => 
-            formatDateForAPI(new Date(event.date)) === dateString
-        );
+        const dayEvents = allEvents.filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0);
+            const compareDate = new Date(currentDate);
+            compareDate.setHours(0, 0, 0, 0);
+            return formatDateForAPI(eventDate) === formatDateForAPI(compareDate);
+        });
         
         const eventsHTML = dayEvents.map(event => `
             <div class="week-event event-${event.color}">
@@ -593,7 +769,7 @@ function renderWeeklyCalendar() {
         `).join('');
         
         gridHTML += `
-            <div class="week-day" data-date="${dateString}">
+            <div class="week-day${todayClass}" data-date="${dateString}">
                 ${eventsHTML}
             </div>
         `;
@@ -602,20 +778,31 @@ function renderWeeklyCalendar() {
     weekHeader.innerHTML = headerHTML;
     weekGrid.innerHTML = gridHTML;
     
+    console.log('Weekly calendar rendered');
+    
     // Ajouter les écouteurs d'événements pour les jours
     document.querySelectorAll('.week-day').forEach(day => {
         day.addEventListener('click', function() {
-            showEventDetails(this.getAttribute('data-date'));
+            const date = this.getAttribute('data-date');
+            console.log('Week day clicked:', date);
+            showEventDetails(date);
         });
     });
 }
 
 // Afficher les détails des événements d'une date
 function showEventDetails(dateString) {
+    console.log('Showing event details for:', dateString);
+    
     const date = new Date(dateString);
     const modal = document.getElementById('eventModal');
     const modalDate = document.getElementById('modalDate');
     const modalEvents = document.getElementById('modalEvents');
+    
+    if (!modal || !modalDate || !modalEvents) {
+        console.error('Event modal elements not found');
+        return;
+    }
     
     modalDate.textContent = formatFullDate(date);
     
@@ -627,9 +814,15 @@ function showEventDetails(dateString) {
     ];
     
     // Filtrer les événements de cette date
-    const dayEvents = allEvents.filter(event => 
-        formatDateForAPI(new Date(event.date)) === dateString
-    );
+    const dayEvents = allEvents.filter(event => {
+        const eventDate = new Date(event.date);
+        eventDate.setHours(0, 0, 0, 0);
+        const compareDate = new Date(date);
+        compareDate.setHours(0, 0, 0, 0);
+        return formatDateForAPI(eventDate) === formatDateForAPI(compareDate);
+    });
+    
+    console.log('Found', dayEvents.length, 'events for this date');
     
     if (dayEvents.length === 0) {
         modalEvents.innerHTML = '<p>Aucun événement prévu pour cette date.</p>';
@@ -647,6 +840,7 @@ function showEventDetails(dateString) {
     }
     
     modal.classList.add('active');
+    console.log('Event modal opened');
 }
 
 // ACTUALITÉS
@@ -654,6 +848,8 @@ function showEventDetails(dateString) {
 // Rendu des actualités
 function renderNews() {
     const container = document.getElementById('newsContainer');
+    if (!container) return;
+    
     const actualites = appState.cachedData.actualites;
     
     if (actualites.length === 0) {
@@ -667,7 +863,7 @@ function renderNews() {
             <div class="news-content">
                 <div class="news-date">${formatDate(news.date)}</div>
                 <h3>${news.title}</h3>
-                <p>${news.content}</p>
+                <p>${news.content || ''}</p>
             </div>
         </div>
     `).join('');
@@ -685,6 +881,8 @@ function renderNews() {
 // Rendu des professeurs
 function renderTeachers() {
     const container = document.getElementById('teachersGrid');
+    if (!container) return;
+    
     const professeurs = appState.cachedData.professeurs;
     
     container.innerHTML = professeurs.map(teacher => `
@@ -701,32 +899,56 @@ function renderTeachers() {
     // Ajouter les écouteurs d'événements
     document.querySelectorAll('.teacher-card').forEach(card => {
         card.addEventListener('click', function() {
-            showTeacherDetails(this.getAttribute('data-teacher-id'));
+            const teacherId = this.getAttribute('data-teacher-id');
+            console.log('Teacher card clicked:', teacherId);
+            showTeacherDetails(teacherId);
         });
     });
 }
 
 // Afficher les détails d'un professeur
 function showTeacherDetails(teacherId) {
+    console.log('Showing teacher details for:', teacherId);
+    
     const teacher = appState.cachedData.professeurs.find(t => 
         (t._id || t.name) === teacherId
     );
     
-    if (!teacher) return;
+    if (!teacher) {
+        console.error('Teacher not found:', teacherId);
+        return;
+    }
     
     const modal = document.getElementById('teacherModal');
     const container = document.getElementById('teacherDetails');
+    
+    if (!modal || !container) {
+        console.error('Teacher modal elements not found');
+        return;
+    }
     
     // Récupérer les devoirs et examens de ce professeur
     const teacherSubjects = teacher.subjects ? teacher.subjects.map(s => s.name) : [];
     const upcomingHomeworks = appState.cachedData.devoirs
         .filter(d => teacherSubjects.includes(d.matiere?.name))
-        .filter(d => new Date(d.date) >= new Date())
+        .filter(d => {
+            const hwDate = new Date(d.date);
+            hwDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return hwDate >= today;
+        })
         .slice(0, 5);
     
     const upcomingExams = appState.cachedData.examens
         .filter(e => teacherSubjects.includes(e.matiere?.name))
-        .filter(e => new Date(e.date) >= new Date())
+        .filter(e => {
+            const examDate = new Date(e.date);
+            examDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return examDate >= today;
+        })
         .slice(0, 5);
     
     container.innerHTML = `
@@ -771,6 +993,7 @@ function showTeacherDetails(teacherId) {
     `;
     
     modal.classList.add('active');
+    console.log('Teacher modal opened');
 }
 
 // DÉLÉGUÉS
@@ -778,6 +1001,8 @@ function showTeacherDetails(teacherId) {
 // Rendu des délégués
 function renderDelegates() {
     const container = document.getElementById('delegatesGrid');
+    if (!container) return;
+    
     const delegues = appState.cachedData.delegues;
     
     container.innerHTML = delegues.map(delegate => `
@@ -853,7 +1078,17 @@ function formatDayName(dayIndex) {
 
 // Formater une date pour l'API (YYYY-MM-DD)
 function formatDateForAPI(date) {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Vérifier si deux dates sont le même jour
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
 }
 
 // DONNÉES PAR DÉFAUT
@@ -892,8 +1127,8 @@ function getDefaultDelegates() {
             photo: 'placeholder-delegate.jpg'
         },
         {
-            _id: 'Andrew Zein',
-            name: 'Lucas Bernard',
+            _id: 'delegate3',
+            name: 'Andrew Zein',
             role: 'Éco-Délégué(e)',
             description: 'Responsable des initiatives écologiques de la classe et de la sensibilisation aux enjeux environnementaux.',
             contact: 'https://wa.me/123456791',
@@ -904,10 +1139,15 @@ function getDefaultDelegates() {
 
 // Gestion de la déconnexion/réconnection
 window.addEventListener('online', function() {
+    console.log('Connection restored, fetching data...');
     fetchAllData();
 });
 
 window.addEventListener('offline', function() {
+    console.log('Connection lost, using cached data');
     appState.useCachedData = true;
-    document.getElementById('errorBanner').style.display = 'block';
+    const errorBanner = document.getElementById('errorBanner');
+    if (errorBanner) {
+        errorBanner.style.display = 'block';
+    }
 });

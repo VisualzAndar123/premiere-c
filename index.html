@@ -6,6 +6,8 @@
     <title>Première C - Portail de Classe</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Add Sanity Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@sanity/client@3.4.1"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -117,15 +119,15 @@
                         <!-- Dynamically populated -->
                     </div>
                 </div>
-                
-                <!-- Event Details Modal -->
-                <div class="event-modal" id="eventModal">
-                    <div class="modal-content">
-                        <span class="close-modal">&times;</span>
-                        <h3 id="modalDate"></h3>
-                        <div class="modal-events" id="modalEvents">
-                            <!-- Dynamically populated -->
-                        </div>
+            </div>
+            
+            <!-- Event Details Modal -->
+            <div class="event-modal modal" id="eventModal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h3 id="modalDate"></h3>
+                    <div class="modal-events" id="modalEvents">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
@@ -151,7 +153,7 @@
             </div>
             
             <!-- Teacher Details Modal -->
-            <div class="teacher-modal" id="teacherModal">
+            <div class="teacher-modal modal" id="teacherModal">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
                     <div class="teacher-details" id="teacherDetails">
